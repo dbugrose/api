@@ -42,12 +42,12 @@ namespace api.Controllers
             return _context.GetIncompleteTodos();
         }
         [HttpPut("UpdateTodo/{id}")]
-        public bool UpdateTodo(int id)
+        public Task<bool> UpdateTodo(int id)
         {
             return _context.UpdateTodo(id);
         }
         [HttpPut("SoftDeleteTodo/{id}")]
-        public bool SoftDeleteTodo(int id)
+        public Task<bool> SoftDeleteTodo(int id)
         {
             return _context.SoftDeleteTodo(id);
         }

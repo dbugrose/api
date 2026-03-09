@@ -8,7 +8,7 @@ namespace api.Models
     public class HealthModel
     {
         public int Id { get; set; }
-        public string? UserId { get; set; }
+        public string? Username { get; set; }
         public int Health { get; set; }
 
     }

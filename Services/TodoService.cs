@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Models;
 using api.Services.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Services
 {
@@ -14,6 +15,11 @@ namespace api.Services
         {
             _context = context;
         }
+
+        private async Task<TodoModel> GetTodoByIdAsync(int id)
+        {
+            return await _context.TodoInfo.FindAsync(id);
+        }
         public bool CreateTodo(TodoModel todo)
         {
             bool result;
@@ -22,16 +28,16 @@ namespace api.Services
             return result;
         }
 
-        public bool SoftDeleteTodo(int id)
+        public async Task<bool> SoftDeleteTodo(int id)
         {
-            var todo = _context.TodoInfo.FirstOrDefault(t => t.Id == id);
+            var todo = await GetTodoByIdAsync(id);
 
-            if (todo == null)
-                return false;
+            if(todo == null) return false;
 
             todo.Deleted = true;
-            _context.Update(todo);
-            return _context.SaveChanges() != 0;
+
+            _context.TodoInfo.Update(todo);
+            return await _context.SaveChangesAsync() != 0;
         }
 
         public bool HardDeleteTodo(int id)
@@ -56,16 +62,16 @@ namespace api.Services
             return _context.TodoInfo;
         }
 
-        public bool UpdateTodo(int id)
+        public async Task<bool> UpdateTodo(int id)
         {
-            var todo = _context.TodoInfo.FirstOrDefault(t => t.Id == id);
+            var todo = await GetTodoByIdAsync(id);
 
-            if (todo == null)
-                return false;
+            if(todo == null) return false;
 
-            todo.Completed = true;
-            _context.Update(todo);
-            return _context.SaveChanges() != 0;
+            todo.Deleted = true;
+
+            _context.TodoInfo.Update(todo);
+            return await _context.SaveChangesAsync() != 0;
         }
     }
 }
