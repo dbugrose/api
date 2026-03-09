@@ -22,40 +22,40 @@ namespace api.Controllers
             _context = context;
         }
         //Create
-    [HttpPost("CreateTodo")]
-    public bool CreateTodo(TodoModel todo)
+    [HttpPost("CreateTodo/{username}")]
+    public Task<bool> CreateTodo(TodoModel todo)
         {
             return _context.CreateTodo(todo);
         }
 
-[HttpGet("GetTodos")]
+[HttpGet("GetTodos/{username}")]
 
-        public IEnumerable<TodoModel> GetTodos()
+        public Task<TodoModel> GetTodos(string username)
         {
-            return _context.GetTodos();
+            return _context.GetTodos(username);
         }
 
-[HttpGet("GetIncompleteTodos")]
+[HttpGet("GetIncompleteTodos/{username}")]
 
-        public IEnumerable<TodoModel> GetIncompleteTodos()
+        public Task<TodoModel> GetIncompleteTodos(string username)
         {
-            return _context.GetIncompleteTodos();
+            return _context.GetIncompleteTodos(username);
         }
-        [HttpPut("UpdateTodo/{id}")]
-        public Task<bool> UpdateTodo(int id)
+        [HttpPut("UpdateTodo/{username}/{id}")]
+        public Task<bool> UpdateTodo(string username, int id)
         {
-            return _context.UpdateTodo(id);
+            return _context.UpdateTodo(username, id);
         }
-        [HttpPut("SoftDeleteTodo/{id}")]
-        public Task<bool> SoftDeleteTodo(int id)
+        [HttpPut("SoftDeleteTodo/{username}/{id}")]
+        public Task<bool> SoftDeleteTodo(string username, int id)
         {
-            return _context.SoftDeleteTodo(id);
+            return _context.SoftDeleteTodo(username, id);
         }
 
-        [HttpDelete("HardDeleteTodo/{id}")]
-        public bool HardDeleteTodo(int id)
+        [HttpDelete("HardDeleteTodo/{username}/{id}")]
+        public Task<bool> HardDeleteTodo(string username, int id)
         {
-            return _context.HardDeleteTodo(id);
+            return _context.HardDeleteTodo(username, id);
         }
     }
 }

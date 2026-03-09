@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Models;
 using api.Services.Context;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 
 namespace api.Services
@@ -16,21 +17,22 @@ namespace api.Services
             _context = context;
         }
 
-        private async Task<TodoModel> GetTodoByIdAsync(int id)
-        {
+        public async Task<TodoModel> GetTodoInfoByUsernameAsync(string username) => await _context.TodoInfo.SingleOrDefaultAsync(user => user.Username == username);
+        private async Task<TodoModel> GetTodoByIdAsync(string username, int id)
+        {   await GetTodoInfoByUsernameAsync(username);
             return await _context.TodoInfo.FindAsync(id);
         }
-        public bool CreateTodo(TodoModel todo)
-        {
+        public async Task<bool> CreateTodo(TodoModel todo)
+        { 
             bool result;
             _context.Add(todo);
             result = _context.SaveChanges() != 0;
             return result;
         }
 
-        public async Task<bool> SoftDeleteTodo(int id)
-        {
-            var todo = await GetTodoByIdAsync(id);
+        public async Task<bool> SoftDeleteTodo(string username, int id)
+        { 
+            var todo = await GetTodoByIdAsync(username, id);
 
             if(todo == null) return false;
 
@@ -40,8 +42,8 @@ namespace api.Services
             return await _context.SaveChangesAsync() != 0;
         }
 
-        public bool HardDeleteTodo(int id)
-        {
+        public async Task<bool> HardDeleteTodo(string username, int id)
+        {   await GetTodoInfoByUsernameAsync(username);
             var foundItem = _context.TodoInfo.FirstOrDefault(t => t.Id == id);
 
             if (foundItem == null)
@@ -52,19 +54,19 @@ namespace api.Services
             _context.TodoInfo.Remove(foundItem);
             return _context.SaveChanges() > 0;
         }
-        public IEnumerable<TodoModel> GetIncompleteTodos()
-        {
-            return _context.TodoInfo.Where(item => item.Completed == false);
+        public async Task<TodoModel> GetIncompleteTodos(string username)
+        {   await GetTodoInfoByUsernameAsync(username);
+            return _context.TodoInfo.FirstOrDefault(t => t.Completed == false);
         }
 
-        public IEnumerable<TodoModel> GetTodos()
-        {
-            return _context.TodoInfo;
+        public async Task<TodoModel> GetTodos(string username)
+        {   
+            return _context.TodoInfo.FirstOrDefault(user => user.Username == username);
         }
 
-        public async Task<bool> UpdateTodo(int id)
-        {
-            var todo = await GetTodoByIdAsync(id);
+        public async Task<bool> UpdateTodo(string username, int id)
+        {   
+            var todo = await GetTodoByIdAsync(username, id);
 
             if(todo == null) return false;
 
