@@ -4,9 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Models;
 using api.Services;
-using api.Services.Context;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 
 namespace api.Controllers
@@ -21,41 +20,91 @@ namespace api.Controllers
         {
             _context = context;
         }
+
+        [HttpGet("GetTodos")]
+
+        public async Task<IActionResult> GetTodos()
+        {
+            var todos = await _context.GetTodosAsync();
+
+            if (todos != null) return Ok(todos);
+
+            return NotFound(new { Message = "No Todos " });
+        }
         //Create
-    [HttpPost("CreateTodo/{username}")]
-    public Task<bool> CreateTodo(TodoModel todo)
+
+        [HttpGet("GetTodosByUserId/{userId}")]
+        public async Task<IActionResult> GetAllTodosByUserId(int userId)
         {
-            return _context.CreateTodo(todo);
+            var todos = await _context.GetTodoByUserIdAsync(userId);
+
+            if (todos != null) return Ok(new { todos });
+
+            return NotFound(new { Message = "No todos" });
+        }
+        [HttpPost("CreateTodo")]
+        public async Task<IActionResult> CreateTodo(TodosModel todo)
+        {
+            if (todo == null)
+            {
+                return BadRequest("Blog data is required.");
+            }
+            var success = await _context.AddTodoAsync(todo);
+
+            if (success) return Ok(new { success });
+
+            return BadRequest(new { success });
         }
 
-[HttpGet("GetTodos/{username}")]
+        [HttpGet("GetIncompleteTodos/")]
 
-        public Task<TodoModel> GetTodos(string username)
+        public async Task<IActionResult> GetIncompleteTodos()
         {
-            return _context.GetTodos(username);
+            var todos = await _context.GetIncompleteTodosAsync();
+
+            if (todos != null) return Ok(new { todos });
+
+            return BadRequest(new { Message = "No todos " });
+        }
+        [HttpPut("UpdateTodo")]
+        public async Task<IActionResult> UpdateTodo(TodosModel todo)
+        {
+            var success = await _context.EditTodoAsync(todo);
+
+            if (success) return Ok(new { success });
+
+            return BadRequest(new { success });
+        }
+        [HttpPut("SoftDeleteTodo")]
+        public async Task<IActionResult> SoftDeleteTodo(TodosModel todo)
+        {
+            var success = await _context.EditTodoAsync(todo);
+
+            if (success) return Ok(new { success });
+
+            return BadRequest(new { success });
         }
 
-[HttpGet("GetIncompleteTodos/{username}")]
+        // [HttpDelete("HardDeleteTodo/{id}")]
+        // public async Task<IActionResult> HardDeleteTodo(int id)
+        // {
+        //     var success = await _context.HardDeleteTodo(id);
 
-        public Task<TodoModel> GetIncompleteTodos(string username)
-        {
-            return _context.GetIncompleteTodos(username);
-        }
-        [HttpPut("UpdateTodo/{username}/{id}")]
-        public Task<bool> UpdateTodo(string username, int id)
-        {
-            return _context.UpdateTodo(username, id);
-        }
-        [HttpPut("SoftDeleteTodo/{username}/{id}")]
-        public Task<bool> SoftDeleteTodo(string username, int id)
-        {
-            return _context.SoftDeleteTodo(username, id);
-        }
+        //     if (!success)
+        //         return NotFound($"Todo with id {id} was not found.");
 
-        [HttpDelete("HardDeleteTodo/{username}/{id}")]
-        public Task<bool> HardDeleteTodo(string username, int id)
-        {
-            return _context.HardDeleteTodo(username, id);
-        }
+        //     return Ok("Todo deleted successfully.");
+        // }
+
+        // [HttpDelete("HardDeleteUnassignedTodo/{id}")]
+        // public async Task<IActionResult> HardDeleteUnassignedTodo(int id)
+        // {
+        //     var success = await _context.HardDeleteUnassignedTodo(id);
+
+        //     if (!success)
+        //         return NotFound($"Todo with id {id} was not found.");
+
+        //     return Ok("Unassigned todo deleted successfully.");
+        // }
     }
 }

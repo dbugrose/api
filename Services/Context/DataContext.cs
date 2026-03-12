@@ -14,7 +14,7 @@ namespace api.Services.Context
         
       }  
     public DbSet<UserModel> UserInfo {get; set;}
-    public DbSet<TodoModel> TodoInfo {get; set;}
+    public DbSet<TodosModel> TodosInfo {get; set;}
     public DbSet<StatsModel> StatsInfo {get; set;}
     public DbSet<FriendRequestModel> FriendRequestInfo {get; set;}
     public DbSet<BlocksModel> BlockedInfo {get; set;}

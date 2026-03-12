@@ -16,14 +16,14 @@ namespace api.Controllers
             _statsService = statsService;
         }
 
-        [HttpPost("create/{username}")]
+        [HttpPost("CreateStats")]
         public async Task<ActionResult<StatsModel>> CreateStats(string username)
         {
             var stats = await _statsService.CreateStats(username);
             return Ok(stats);
         }
 
-        [HttpGet("{username}")]
+        [HttpGet("GetStats")]
         public async Task<ActionResult<StatsModel>> GetStats(string username)
         {
             var stats = await _statsService.GetStats(username);
@@ -34,24 +34,17 @@ namespace api.Controllers
             return Ok(stats);
         }
 
-        [HttpPost("CompleteTask/{username}")]
+        [HttpPost("CompleteTask")]
         public async Task<IActionResult> CompleteTask(string username, TaskDifficulty difficulty)
         {
             await _statsService.CompleteTask(username, difficulty);
             return Ok();
         }
 
-        [HttpPost("MonsterSlain/{username}")]
+        [HttpPost("MonsterSlain")]
         public async Task<IActionResult> MonsterSlain(string username)
         {
             await _statsService.MonsterSlain(username);
-            return Ok();
-        }
-
-        [HttpDelete("{username}")]
-        public async Task<IActionResult> DeleteStats(string username)
-        {
-            await _statsService.DeleteStats(username);
             return Ok();
         }
     }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using api.Models;
 using api.Services.Context;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace api.Services
@@ -17,63 +18,63 @@ namespace api.Services
             _context = context;
         }
 
-        public async Task<TodoModel> GetTodoInfoByUsernameAsync(string username) => await _context.TodoInfo.SingleOrDefaultAsync(user => user.Username == username);
-        private async Task<TodoModel> GetTodoByIdAsync(string username, int id)
-        {   await GetTodoInfoByUsernameAsync(username);
-            return await _context.TodoInfo.FindAsync(id);
+        public async Task<List<TodosModel>> GetTodosAsync () => await _context.TodosInfo.ToListAsync();
+        private async Task<TodosModel> GetTodoByIdAsync(int id)
+        {
+            return await _context.TodosInfo.FindAsync(id);
         }
-        public async Task<bool> CreateTodo(TodoModel todo)
+        public async Task<bool> AddTodoAsync(TodosModel todo)
         { 
-            bool result;
-            _context.Add(todo);
-            result = _context.SaveChanges() != 0;
-            return result;
-        }
-
-        public async Task<bool> SoftDeleteTodo(string username, int id)
-        { 
-            var todo = await GetTodoByIdAsync(username, id);
-
-            if(todo == null) return false;
-
-            todo.Deleted = true;
-
-            _context.TodoInfo.Update(todo);
+             await _context.TodosInfo.AddAsync(todo);
             return await _context.SaveChangesAsync() != 0;
         }
 
-        public async Task<bool> HardDeleteTodo(string username, int id)
-        {   await GetTodoInfoByUsernameAsync(username);
-            var foundItem = _context.TodoInfo.FirstOrDefault(t => t.Id == id);
+        public async Task<bool> EditTodoAsync(TodosModel todo)
+        {
+            var todoToEdit = await GetTodoByIdAsync(todo.Id);
 
-            if (foundItem == null)
-            {
-                return false;
-            }
+            if(todoToEdit == null) return false;
 
-            _context.TodoInfo.Remove(foundItem);
-            return _context.SaveChanges() > 0;
-        }
-        public async Task<TodoModel> GetIncompleteTodos(string username)
-        {   await GetTodoInfoByUsernameAsync(username);
-            return _context.TodoInfo.FirstOrDefault(t => t.Completed == false);
-        }
+            todoToEdit.Text = todo.Text;
+            todoToEdit.Difficulty = todo.Difficulty;
+            todoToEdit.Completed = todo.Completed;
+            todoToEdit.Deleted = todo.Deleted;
+            
 
-        public async Task<TodoModel> GetTodos(string username)
-        {   
-            return _context.TodoInfo.FirstOrDefault(user => user.Username == username);
-        }
-
-        public async Task<bool> UpdateTodo(string username, int id)
-        {   
-            var todo = await GetTodoByIdAsync(username, id);
-
-            if(todo == null) return false;
-
-            todo.Deleted = true;
-
-            _context.TodoInfo.Update(todo);
+            _context.TodosInfo.Update(todoToEdit);
             return await _context.SaveChangesAsync() != 0;
         }
+
+// public async Task<bool> HardDeleteTodo(int id)
+// {
+//     var foundItem = await _context.TodosInfo
+//         .FirstOrDefaultAsync(t => t.Id == id);
+
+//     if (foundItem == null)
+//         return false;
+
+//     _context.TodosInfo.Remove(foundItem);
+//     return await _context.SaveChangesAsync() > 0;
+// }
+
+// public async Task<bool> HardDeleteUnassignedTodo(int id)
+// {
+//     var foundItem = await _context.TodosInfo
+//         .FirstOrDefaultAsync(t => t.Id == id);
+
+//     if (foundItem == null)
+//         return false;
+
+//     _context.TodosInfo.Remove(foundItem);
+//     return await _context.SaveChangesAsync() > 0;
+// }
+
+        
+
+        public async Task<List<TodosModel>> GetTodoByUserIdAsync(int id) => await _context.TodosInfo.Where(todo => todo.UserId == id).ToListAsync();
+
+        public async Task<List<TodosModel>> GetIncompleteTodosAsync() => await _context.TodosInfo.Where(todo => todo.Completed == false).ToListAsync();
+    // }
+
     }
 }

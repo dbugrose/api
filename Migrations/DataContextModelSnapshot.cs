@@ -119,7 +119,7 @@ namespace api.Migrations
                     b.ToTable("StatsInfo");
                 });
 
-            modelBuilder.Entity("api.Models.TodoModel", b =>
+            modelBuilder.Entity("api.Models.TodosModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -139,12 +139,12 @@ namespace api.Migrations
                     b.Property<string>("Text")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Username")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("TodoInfo");
+                    b.ToTable("TodosInfo");
                 });
 
             modelBuilder.Entity("api.Models.UserModel", b =>
