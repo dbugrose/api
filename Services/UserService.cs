@@ -27,16 +27,38 @@ namespace api.Services
 
         public async Task<bool> CreateAccount(UserDTO newUser)
         {
-            if(await DoesUserExist(newUser.Username)) return false;
+            if (await DoesUserExist(newUser.Username))
+                return false;
 
-            UserModel user = new();
-            PasswordDTO EncryptedPassword = HashPassword(newUser.Password);
-            user.Username = newUser.Username;
-            user.Hash = EncryptedPassword.Hash;
-            user.Salt = EncryptedPassword.Salt;
+            PasswordDTO encryptedPassword = HashPassword(newUser.Password);
+
+            UserModel user = new UserModel
+            {
+                Username = newUser.Username,
+                Hash = encryptedPassword.Hash,
+                Salt = encryptedPassword.Salt,
+
+                Health = new HealthModel
+                {
+                    Username = newUser.Username,
+                    Health = 100
+                },
+
+                Stats = new StatsModel
+                {
+                    Username = newUser.Username,
+                    MonstersSlain = 0,
+                    TasksCompleted = 0,
+                    EasyTasks = 0,
+                    MedTasks = 0,
+                    HardTasks = 0
+                }
+
+            };
 
             await _dataContext.UserInfo.AddAsync(user);
-            return await _dataContext.SaveChangesAsync() != 0;
+
+            return await _dataContext.SaveChangesAsync() > 0;
         }
 
         private async Task<bool> DoesUserExist(string username)
@@ -64,13 +86,13 @@ namespace api.Services
             };
         }
 
-        public async Task<string> Login (UserDTO user)
+        public async Task<string> Login(UserDTO user)
         {
             UserModel currentUser = await GetUserInfoByUsernameAsync(user.Username);
 
-            if(currentUser == null) return null;
+            if (currentUser == null) return null;
 
-            if(!VerifyPassword(user.Password, currentUser.Salt, currentUser.Hash)) return null;
+            if (!VerifyPassword(user.Password, currentUser.Salt, currentUser.Hash)) return null;
 
             return GenerateJWT(new List<Claim>());
         }
@@ -97,7 +119,7 @@ namespace api.Services
 
             string checkHash;
 
-            using(var derivedBytes = new Rfc2898DeriveBytes(password, saltByte, 310000, HashAlgorithmName.SHA256))
+            using (var derivedBytes = new Rfc2898DeriveBytes(password, saltByte, 310000, HashAlgorithmName.SHA256))
             {
                 checkHash = Convert.ToBase64String(derivedBytes.GetBytes(32));
                 return hash == checkHash;
@@ -107,10 +129,10 @@ namespace api.Services
 
 
         public async Task<UserModel> GetUserInfoByUsernameAsync(string username) => await _dataContext.UserInfo.SingleOrDefaultAsync(user => user.Username == username);
-        
+
         public async Task<UserInfoDTO> GetUserByUsername(string username)
         {
-            var currentUser = await _dataContext.UserInfo.SingleOrDefaultAsync(user => user.Username ==username);
+            var currentUser = await _dataContext.UserInfo.SingleOrDefaultAsync(user => user.Username == username);
 
             UserInfoDTO user = new();
             user.Id = currentUser.Id;

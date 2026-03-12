@@ -12,7 +12,7 @@ using api.Services.Context;
 namespace api.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20260312013832_init")]
+    [Migration("20260312235429_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace api.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("api.Models.BlocksModel", b =>
+            modelBuilder.Entity("api.Models.CoopModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -33,18 +33,21 @@ namespace api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("BlockedId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BlockerId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("ReceiverId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SenderId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
-                    b.ToTable("BlockedInfo");
+                    b.ToTable("CoopInfo");
                 });
 
             modelBuilder.Entity("api.Models.FriendRequestModel", b =>
@@ -161,15 +164,44 @@ namespace api.Migrations
                     b.Property<string>("Hash")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("HealthId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Salt")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("StatsId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("HealthId");
+
+                    b.HasIndex("StatsId");
+
                     b.ToTable("UserInfo");
+                });
+
+            modelBuilder.Entity("api.Models.UserModel", b =>
+                {
+                    b.HasOne("api.Models.HealthModel", "Health")
+                        .WithMany()
+                        .HasForeignKey("HealthId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api.Models.StatsModel", "Stats")
+                        .WithMany()
+                        .HasForeignKey("StatsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Health");
+
+                    b.Navigation("Stats");
                 });
 #pragma warning restore 612, 618
         }

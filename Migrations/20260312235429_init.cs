@@ -12,18 +12,19 @@ namespace api.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "BlockedInfo",
+                name: "CoopInfo",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    BlockerId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BlockedId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SenderId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ReceiverId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BlockedInfo", x => x.Id);
+                    table.PrimaryKey("PK_CoopInfo", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -99,34 +100,58 @@ namespace api.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Username = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Salt = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Hash = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Hash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    HealthId = table.Column<int>(type: "int", nullable: false),
+                    StatsId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserInfo", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserInfo_HealthInfo_HealthId",
+                        column: x => x.HealthId,
+                        principalTable: "HealthInfo",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserInfo_StatsInfo_StatsId",
+                        column: x => x.StatsId,
+                        principalTable: "StatsInfo",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserInfo_HealthId",
+                table: "UserInfo",
+                column: "HealthId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserInfo_StatsId",
+                table: "UserInfo",
+                column: "StatsId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "BlockedInfo");
+                name: "CoopInfo");
 
             migrationBuilder.DropTable(
                 name: "FriendRequestInfo");
-
-            migrationBuilder.DropTable(
-                name: "HealthInfo");
-
-            migrationBuilder.DropTable(
-                name: "StatsInfo");
 
             migrationBuilder.DropTable(
                 name: "TodosInfo");
 
             migrationBuilder.DropTable(
                 name: "UserInfo");
+
+            migrationBuilder.DropTable(
+                name: "HealthInfo");
+
+            migrationBuilder.DropTable(
+                name: "StatsInfo");
         }
     }
 }
