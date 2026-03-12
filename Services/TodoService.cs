@@ -45,17 +45,11 @@ namespace api.Services
             return await _context.SaveChangesAsync() != 0;
         }
 
-// public async Task<bool> HardDeleteTodo(int id)
-// {
-//     var foundItem = await _context.TodosInfo
-//         .FirstOrDefaultAsync(t => t.Id == id);
-
-//     if (foundItem == null)
-//         return false;
-
-//     _context.TodosInfo.Remove(foundItem);
-//     return await _context.SaveChangesAsync() > 0;
-// }
+public async Task<bool> HardDeleteTodo(TodosModel todo)
+{
+    _context.TodosInfo.Remove(todo);
+    return await _context.SaveChangesAsync() > 0;
+}
 
 // public async Task<bool> HardDeleteUnassignedTodo(int id)
 // {

@@ -16,7 +16,7 @@ namespace api.Controllers
             _service = service;
         }
 
-        [HttpGet("{username}")]
+        [HttpGet("GetHealth")]
         public async Task<ActionResult<HealthModel>> GetHealth(string username)
         {
             var health = await _service.GetHealth(username);
@@ -27,7 +27,7 @@ namespace api.Controllers
             return Ok(health);
         }
 
-        [HttpPut("Damage/{username}")]
+        [HttpPut("Damage")]
         public async Task<ActionResult<int>> DamageMonster(string username, string difficulty)
         {
             var health = await _service.DamageMonster(username, difficulty);
@@ -38,7 +38,7 @@ namespace api.Controllers
             return Ok(health);
         }
 
-        [HttpPut("Reset/{username}")]
+        [HttpPut("ResetHealth")]
         public async Task<IActionResult> ResetHealth(string username)
         {
             await _service.ResetHealth(username);

@@ -75,26 +75,17 @@ namespace api.Controllers
 
             return BadRequest(new { success });
         }
-        [HttpPut("SoftDeleteTodo")]
-        public async Task<IActionResult> SoftDeleteTodo(TodosModel todo)
+
+        [HttpDelete("HardDeleteTodo")]
+        public async Task<IActionResult> HardDeleteTodo(TodosModel todo)
         {
-            var success = await _context.EditTodoAsync(todo);
+            var success = await _context.HardDeleteTodo(todo);
 
-            if (success) return Ok(new { success });
+            if (!success)
+                return NotFound($"Todo was not found.");
 
-            return BadRequest(new { success });
+            return Ok("Todo deleted successfully.");
         }
-
-        // [HttpDelete("HardDeleteTodo/{id}")]
-        // public async Task<IActionResult> HardDeleteTodo(int id)
-        // {
-        //     var success = await _context.HardDeleteTodo(id);
-
-        //     if (!success)
-        //         return NotFound($"Todo with id {id} was not found.");
-
-        //     return Ok("Todo deleted successfully.");
-        // }
 
         // [HttpDelete("HardDeleteUnassignedTodo/{id}")]
         // public async Task<IActionResult> HardDeleteUnassignedTodo(int id)
