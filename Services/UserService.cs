@@ -38,20 +38,16 @@ namespace api.Services
                 Hash = encryptedPassword.Hash,
                 Salt = encryptedPassword.Salt,
 
-                Health = new HealthModel
-                {
-                    Username = newUser.Username,
-                    Health = 100
-                },
 
                 Stats = new StatsModel
                 {
-                    Username = newUser.Username,
+                    Id = newUser.Id,
                     MonstersSlain = 0,
                     TasksCompleted = 0,
                     EasyTasks = 0,
                     MedTasks = 0,
-                    HardTasks = 0
+                    HardTasks = 0,
+                    Health = 100
                 }
 
             };
@@ -103,8 +99,8 @@ namespace api.Services
             var SigningCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
             var tokenOptions = new JwtSecurityToken(
-                issuer: "slaythemonster2526dor-ghhnbvgkercbd0gx.westus3-01.azurewebsites.net/",
-                audience: "slaythemonster2526dor-ghhnbvgkercbd0gx.westus3-01.azurewebsites.net/",
+                issuer: "http://localhost:5000/",
+                audience: "http://localhost:5000/",
                 claims: claims,
                 expires: DateTime.Now.AddMinutes(30),
                 signingCredentials: SigningCredentials

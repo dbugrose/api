@@ -15,11 +15,11 @@ namespace api.Services
             _context = context;
         }
 
-        public async Task<StatsModel> CreateStats(string username)
+        public async Task<StatsModel> CreateStats(int id)
         {
             var stats = new StatsModel
             {
-                Username = username,
+                Id = id,
                 MonstersSlain = 0,
                 TasksCompleted = 0,
                 EasyTasks = 0,
@@ -33,15 +33,15 @@ namespace api.Services
             return stats;
         }
 
-        public async Task<StatsModel?> GetStats(string username)
+        public async Task<StatsModel?> GetStats(int id)
         {
             return await _context.StatsInfo
-                .FirstOrDefaultAsync(s => s.Username == username);
+                .FirstOrDefaultAsync(s => s.Id == id);
         }
 
-        public async Task CompleteTask(string username, TaskDifficulty difficulty)
+        public async Task CompleteTask(int id, TaskDifficulty difficulty)
         {
-            var stats = await GetStats(username);
+            var stats = await GetStats(id);
             if (stats == null) return;
 
             stats.TasksCompleted++;
@@ -64,9 +64,9 @@ namespace api.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task MonsterSlain(string username)
+        public async Task MonsterSlain(int id)
         {
-            var stats = await GetStats(username);
+            var stats = await GetStats(id);
             if (stats == null) return;
 
             stats.MonstersSlain++;
@@ -74,20 +74,64 @@ namespace api.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteStats(string username)
+        public async Task DeleteStats(int id)
         {
-            var stats = await GetStats(username);
+            var stats = await GetStats(id);
             if (stats == null) return;
 
             _context.StatsInfo.Remove(stats);
             await _context.SaveChangesAsync();
         }
-    }
+        public async Task<StatsModel?> DamageMonster(StatsModel health, string difficulty)
+        {
+            var healthToEdit = await GetStats(health.Id);
 
-    public enum TaskDifficulty
-    {
-        Easy,
-        Medium,
-        Hard
+            if (healthToEdit == null)
+                return null;
+
+            int damage = difficulty switch
+            {
+                "Easy" => 10,
+                "Medium" => 20,
+                "Hard" => 30,
+                _ => 0
+            };
+
+            healthToEdit.Health -= damage;
+
+            health = healthToEdit;
+
+            if (healthToEdit.Health < 0)
+            {
+                healthToEdit.Health = 0;
+            }
+
+            _context.StatsInfo.Update(health);
+            await _context.SaveChangesAsync();
+            return healthToEdit;
+        }
+
+
+        public async Task<StatsModel?> ResetHealth(StatsModel health)
+        {
+            {
+                var stats = await _context.StatsInfo.FindAsync(health.Id);
+
+                if (stats == null) return null;
+
+                stats.Health = 100;
+
+                await _context.SaveChangesAsync();
+
+                return stats;
+            }
+        }
+
     }
+            public enum TaskDifficulty
+        {
+            Easy,
+            Medium,
+            Hard
+        }
 }

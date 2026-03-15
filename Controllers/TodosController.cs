@@ -8,10 +8,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
+
+
 namespace api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+
     public class TodosController : ControllerBase
     {
         private readonly TodoService _context;
@@ -25,7 +28,7 @@ namespace api.Controllers
 
         public async Task<IActionResult> GetTodos()
         {
-            var todos = await _context.GetTodosAsync();
+            var todos = await _context.GetTodos();
 
             if (todos != null) return Ok(todos);
 
@@ -36,7 +39,7 @@ namespace api.Controllers
         [HttpGet("GetTodosByUserId/{userId}")]
         public async Task<IActionResult> GetAllTodosByUserId(int userId)
         {
-            var todos = await _context.GetTodoByUserIdAsync(userId);
+            var todos = await _context.GetTodoById(userId);
 
             if (todos != null) return Ok(new { todos });
 
@@ -47,9 +50,9 @@ namespace api.Controllers
         {
             if (todo == null)
             {
-                return BadRequest("Blog data is required.");
+                return BadRequest("Data is required.");
             }
-            var success = await _context.AddTodoAsync(todo);
+            var success = await _context.AddTodo(todo);
 
             if (success) return Ok(new { success });
 
@@ -60,7 +63,7 @@ namespace api.Controllers
 
         public async Task<IActionResult> GetIncompleteTodos()
         {
-            var todos = await _context.GetIncompleteTodosAsync();
+            var todos = await _context.GetIncompleteTodos();
 
             if (todos != null) return Ok(new { todos });
 
@@ -69,22 +72,22 @@ namespace api.Controllers
         [HttpPut("UpdateTodo")]
         public async Task<IActionResult> UpdateTodo(TodosModel todo)
         {
-            var success = await _context.EditTodoAsync(todo);
+            var success = await _context.EditTodo(todo);
 
             if (success) return Ok(new { success });
 
             return BadRequest(new { success });
         }
 
-        [HttpDelete("HardDeleteTodo")]
-        public async Task<IActionResult> HardDeleteTodo(TodosModel todo)
+        [HttpDelete("HardDeleteTodo/{id}")]
+        public async Task<IActionResult> HardDeleteTodo(int id)
         {
-            var success = await _context.HardDeleteTodo(todo);
+            var success = await _context.HardDeleteTodo(id);
 
             if (!success)
-                return NotFound($"Todo was not found.");
+                return NotFound(new { Message = "failed to delete" });
 
-            return Ok("Todo deleted successfully.");
+            return Ok(new { success });
         }
 
         // [HttpDelete("HardDeleteUnassignedTodo/{id}")]

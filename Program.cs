@@ -16,7 +16,6 @@ builder.Services.AddOpenApi();
 builder.Services.AddScoped<FriendRequestsService>();
 builder.Services.AddScoped<TodoService>();
 builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<HealthService>();
 builder.Services.AddScoped<StatsService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
