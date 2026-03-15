@@ -18,7 +18,6 @@ namespace api.Services.Context
     public DbSet<StatsModel> StatsInfo {get; set;}
     public DbSet<FriendRequestModel> FriendRequestInfo {get; set;}
     public DbSet<CoopModel> CoopInfo {get; set;}
-    public DbSet<HealthModel> HealthInfo {get; set;}
 
     }
 }
