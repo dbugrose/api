@@ -22,7 +22,7 @@ namespace api.Services
                 .FirstOrDefaultAsync(h => h.Username == username);
         }
 
-        public async Task<int?> DamageMonster(string username, string difficulty)
+        public async Task<HealthModel?> DamageMonster(string username, string difficulty)
         {
             var health = await GetHealth(username);
 
@@ -33,7 +33,7 @@ namespace api.Services
             {
                 "Easy" => 10,
                 "Medium" => 20,
-                "Hard" => 35,
+                "Hard" => 30,
                 _ => 0
             };
 
@@ -44,7 +44,7 @@ namespace api.Services
 
             await _context.SaveChangesAsync();
 
-            return health.Health;
+            return health;
         }
 
         public async Task ResetHealth(string username)
