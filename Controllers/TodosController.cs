@@ -34,7 +34,6 @@ namespace api.Controllers
 
             return NotFound(new { Message = "No Todos " });
         }
-        //Create
 
         [HttpGet("GetTodosByUserId/{userId}")]
         public async Task<IActionResult> GetAllTodosByUserId(int userId)

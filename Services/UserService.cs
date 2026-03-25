@@ -42,6 +42,7 @@ namespace api.Services
                 Stats = new StatsModel
                 {
                     Id = newUser.Id,
+                    Username = newUser.Username,
                     MonstersSlain = 0,
                     TasksCompleted = 0,
                     EasyTasks = 0,
@@ -124,7 +125,9 @@ namespace api.Services
 
 
 
-        public async Task<UserModel> GetUserInfoByUsernameAsync(string username) => await _dataContext.UserInfo.SingleOrDefaultAsync(user => user.Username == username);
+        public async Task<UserModel?> GetUserInfoByUsernameAsync(string username) => await _dataContext.UserInfo.SingleOrDefaultAsync(user => user.Username == username);
+
+        public async Task<UserModel?> GetUserInfoByUserIdAsync(int userId) => await _dataContext.UserInfo.SingleOrDefaultAsync(user => user.Id == userId);
 
         public async Task<UserInfoDTO> GetUserByUsername(string username)
         {

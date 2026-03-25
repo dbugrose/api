@@ -17,14 +17,17 @@ namespace api.Services
             _context = context;
         }
 
-        public async Task<FriendRequestModel> SendRequest(string senderId, string receiverId)
+        public async Task<FriendRequestModel> SendRequest(int senderId, int receiverId)
         {
+            UserModel? sender = await GetUserInfoByUserIdAsync(senderId);
+            UserModel? receiver = await GetUserInfoByUserIdAsync(receiverId);
             var request = new FriendRequestModel
             {
                 SenderId = senderId,
+                SenderUser = sender.Username,
+                ReceiverUser = receiver.Username,
                 ReceiverId = receiverId,
                 Status = "Pending",
-                CreatedAt = DateTime.UtcNow
             };
 
             _context.FriendRequestInfo.Add(request);
@@ -39,14 +42,14 @@ namespace api.Services
                 .FirstOrDefaultAsync(r => r.Id == id);
         }
 
-        public async Task<List<FriendRequestModel>> GetIncomingRequests(string userId)
+        public async Task<List<FriendRequestModel>> GetIncomingRequests(int userId)
         {
             return await _context.FriendRequestInfo
                 .Where(r => r.ReceiverId == userId && r.Status == "Pending")
                 .ToListAsync();
         }
 
-        public async Task<List<FriendRequestModel>> GetSentRequests(string userId)
+        public async Task<List<FriendRequestModel>> GetSentRequests(int userId)
         {
             return await _context.FriendRequestInfo
                 .Where(r => r.SenderId == userId && r.Status == "Pending")
@@ -92,7 +95,7 @@ namespace api.Services
             return true;
         }
 
-        public async Task<List<FriendRequestModel>> GetFriends(string userId)
+        public async Task<List<FriendRequestModel>> GetFriends(int userId)
         {
             return await _context.FriendRequestInfo
                 .Where(r =>
@@ -100,5 +103,28 @@ namespace api.Services
                     && r.Status == "Accepted")
                 .ToListAsync();
         }
+
+        public async Task<UserModel?> GetUserInfoByUserIdAsync(int userId) => await _context.UserInfo.SingleOrDefaultAsync(user => user.Id == userId);
+
+        public async Task<List<StatsModel>> GetFriendsStats(int userId)
+        {
+            var friends = await _context.FriendRequestInfo
+                .Where(r =>
+                    (r.SenderId == userId || r.ReceiverId == userId)
+                    && r.Status == "Accepted")
+                .ToListAsync();
+
+            var friendIds = friends
+                .Select(f => f.SenderId == userId ? f.ReceiverId : f.SenderId)
+                .Distinct()
+                .ToList();
+
+            var friendStats = await _context.StatsInfo
+                .Where(s => friendIds.Contains(s.Id))
+                .ToListAsync();
+
+            return friendStats;
+        }
+
     }
 }

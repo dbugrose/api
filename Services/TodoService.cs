@@ -71,7 +71,7 @@ public async Task<bool> HardDeleteTodo(int id)
 
         
 
-        public async Task<List<TodosModel>> GetTodoByUserIdAsync(int id) => await _context.TodosInfo.Where(todo => todo.UserId == id).ToListAsync();
+        public async Task<List<TodosModel>> GetTodoByModelAsync(int id) => await _context.TodosInfo.Where(todo => todo.UserModelId == id).ToListAsync();
 
         public async Task<List<TodosModel>> GetIncompleteTodos() => await _context.TodosInfo.Where(todo => todo.Completed == false).ToListAsync();
     // }

@@ -17,7 +17,7 @@ namespace api.Services
             _context = context;
         }
 
-        public async Task<CoopModel> SendRequest(string senderId, string receiverId)
+        public async Task<CoopModel> SendRequest(int senderId, int receiverId)
         {
             var request = new CoopModel
             {
@@ -38,7 +38,7 @@ namespace api.Services
                 .FirstOrDefaultAsync(r => r.Id == id);
         }
 
-        public async Task<List<CoopModel>> GetIncomingRequests(string senderId)
+        public async Task<List<CoopModel>> GetIncomingRequests(int senderId)
         {
             return await _context.CoopInfo
                 .Where(r => r.ReceiverId == senderId && r.Status == "Pending")
@@ -46,7 +46,7 @@ namespace api.Services
 
 
         }
-        public async Task<List<CoopModel>> GetSentRequests(string senderId)
+        public async Task<List<CoopModel>> GetSentRequests(int senderId)
         {
             return await _context.CoopInfo
                 .Where(r => r.SenderId == senderId && r.Status == "Pending")
@@ -92,7 +92,7 @@ namespace api.Services
             return true;
         }
 
-        public async Task<List<CoopModel>> GetFriends(string senderId)
+        public async Task<List<CoopModel>> GetFriends(int senderId)
         {
             return await _context.CoopInfo
                 .Where(r =>

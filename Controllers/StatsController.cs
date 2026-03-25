@@ -37,18 +37,18 @@ namespace api.Controllers
             return Ok(stats);
         }
 
-        [HttpPost("CompleteTask")]
+        [HttpPut("CompleteTask/{id}/{difficulty}")]
         public async Task<IActionResult> CompleteTask(int id, TaskDifficulty difficulty)
         {
-            await _statsService.CompleteTask(id, difficulty);
-            return Ok();
+           var completedTasks = await _statsService.CompleteTask(id, difficulty);
+            return Ok(completedTasks);
         }
 
-        [HttpPost("MonsterSlain")]
+        [HttpPut("MonsterSlain/{id}")]
         public async Task<IActionResult> MonsterSlain(int id)
         {
-            await _statsService.MonsterSlain(id);
-            return Ok();
+            var monsterSlain = await _statsService.MonsterSlain(id);
+            return Ok(monsterSlain);
         }
         //  [HttpPost("CreateHealthForUser")]
         // public async Task<ActionResult<StatsModel>> CreateHealthForUser(int id)

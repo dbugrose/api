@@ -16,7 +16,7 @@ namespace api.Controllers
         }
 
         [HttpPost("Send")]
-        public async Task<ActionResult<CoopModel>> SendRequest(string userId, string teamMemberId)
+        public async Task<ActionResult<CoopModel>> SendRequest(int userId, int teamMemberId)
         {
             var request = await _coOpService.SendRequest(userId, teamMemberId);
             return Ok(request);
@@ -31,14 +31,14 @@ namespace api.Controllers
         }
 
         [HttpGet("IncomingRequests/{userId}")]
-        public async Task<ActionResult<List<CoopModel>>> GetIncomingRequests(string userId)
+        public async Task<ActionResult<List<CoopModel>>> GetIncomingRequests(int userId)
         {
             var requests = await _coOpService.GetIncomingRequests(userId);
             return Ok(requests);
         }
 
         [HttpGet("Sent/{userId}")]
-        public async Task<ActionResult<List<CoopModel>>> GetSentRequests(string userId)
+        public async Task<ActionResult<List<CoopModel>>> GetSentRequests(int userId)
         {
             var requests = await _coOpService.GetSentRequests(userId);
             return Ok(requests);

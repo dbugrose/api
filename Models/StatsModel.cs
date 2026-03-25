@@ -8,12 +8,13 @@ namespace api.Models
     public class StatsModel
     {
         public int Id { get; set; }
-        public int MonstersSlain { get; set; }  
-        public int TasksCompleted { get; set; }
-        public int EasyTasks { get; set; }
-        public int MedTasks { get; set; }
-        public int HardTasks { get; set; }
-        public int Health { get; set; }
+        public string? Username {get; set;}
+        public int MonstersSlain { get; set; }  = 0;
+        public int TasksCompleted { get; set; } =0;
+        public int EasyTasks { get; set; } =0;
+        public int MedTasks { get; set; } =0;
+        public int HardTasks { get; set; } = 0;
+        public int Health { get; set; } = 100;
 
     }
 }

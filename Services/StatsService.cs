@@ -39,10 +39,10 @@ namespace api.Services
                 .FirstOrDefaultAsync(s => s.Id == id);
         }
 
-        public async Task CompleteTask(int id, TaskDifficulty difficulty)
+        public async Task<StatsModel> CompleteTask(int id, TaskDifficulty difficulty)
         {
             var stats = await GetStats(id);
-            if (stats == null) return;
+            if (stats == null) return null;
 
             stats.TasksCompleted++;
 
@@ -62,16 +62,18 @@ namespace api.Services
             }
 
             await _context.SaveChangesAsync();
+            return stats;
         }
 
-        public async Task MonsterSlain(int id)
+        public async Task<StatsModel> MonsterSlain(int id)
         {
             var stats = await GetStats(id);
-            if (stats == null) return;
+            if (stats == null) return null;
 
             stats.MonstersSlain++;
 
             await _context.SaveChangesAsync();
+            return stats;
         }
 
         public async Task DeleteStats(int id)

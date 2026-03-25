@@ -57,6 +57,15 @@ namespace api.Controllers
             return BadRequest(new {Message = "No user Found"});
         }
 
+        [HttpGet("GetUserByUserId/{id}")]
+        public async Task<IActionResult> GetUserByUserId(int id)
+        {
+            var user = await _userServices.GetUserInfoByUserIdAsync(id);
+
+            if(user != null) return Ok(user);
+
+            return BadRequest(new {Message = "No user Found"});
+        }
 
     }
 }
